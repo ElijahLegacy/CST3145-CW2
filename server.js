@@ -95,3 +95,32 @@ function updateLessonInventory(lessonIds) {
         });
     });
 }
+
+// Define POST route to update lesson inventory
+app.post('/update-inventory', (req, res) => {
+    const { lessonId } = req.body;
+    const lessonUpdate = { $inc: { availableInventory: -1 } }; // Decrease available inventory by 1
+    lessonsCollection.updateOne({ id: lessonId }, lessonUpdate)
+        .then(result => {
+            console.log('Lesson inventory updated for lesson ID:', lessonId);
+            res.status(200).json({ message: 'Lesson inventory updated successfully' });
+        })
+        .catch(err => {
+            console.error('Error updating lesson inventory:', err);
+            res.status(500).json({ error: 'An error occurred while updating lesson inventory' });
+        });
+});
+
+// Define POST route to save orders
+app.post('/save-order', (req, res) => {
+    const orderData = req.body;
+    ordersCollection.insertOne(orderData)
+        .then(result => {
+            console.log('Order saved:', result.ops[0]);
+            res.status(201).json({ message: 'Order saved successfully' });
+        })
+        .catch(err => {
+            console.error('Error saving order:', err);
+            res.status(500).json({ error: 'An error occurred while saving the order' });
+        });
+});
