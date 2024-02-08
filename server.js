@@ -2,6 +2,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const { MongoClient } = require('mongodb');
+const path = require('path'); // Import the path module
 
 // Initialize Express app
 const app = express();
@@ -9,6 +10,9 @@ const port = process.env.PORT || 3000;
 
 // Middleware
 app.use(bodyParser.json());
+
+// Serve static files from the "public" directory
+app.use(express.static(path.join(__dirname, 'public')));
 
 // MongoDB connection URI
 const mongoURI = 'mongodb+srv://ElijahLegacy:uA1yXRRQfvgScQox@cluster0.mkhsgyb.mongodb.net/';
