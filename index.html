@@ -165,56 +165,70 @@
             
     </main>
     <script>
+        // Function to fetch all lessons from the server
+        function fetchLessons() {
+          fetch('http://localhost:3000/lessons') // Update the endpoint with localhost:3000
+            .then(response => response.json())
+            .then(data => {
+              // Handle the response data here (e.g., update Vue.js data)
+              console.log('Lessons:', data);
+            })
+            .catch(error => {
+              console.error('Error fetching lessons:', error);
+            });
+        }
+    
         // Function to save a new order to the server
-function saveOrder(orderData) {
-  fetch('/orders', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(orderData),
-    })
-    .then(response => response.json())
-    .then(data => {
-      // Handle the response data here (if needed)
-      console.log('Order saved:', data);
-    })
-    .catch(error => {
-      console.error('Error saving order:', error);
-    });
-}
-
-// Function to update available lesson spaces after an order is submitted
-function updateLessonSpaces(orderData) {
-  orderData.lessonIds.forEach(lessonId => {
-    fetch(`/lessons/${lessonId}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ lessonId }),
-      })
-      .then(response => response.json())
-      .then(data => {
-        // Handle the response data here (if needed)
-        console.log('Lesson spaces updated for lesson ID:', lessonId);
-      })
-      .catch(error => {
-        console.error('Error updating lesson spaces:', error);
-      });
-  });
-}
-
-// Example usage:
-// Call saveOrder(orderData) when a new order is submitted
-// Replace orderData with actual order data object
-// saveOrder(orderData);
-
-// Call updateLessonSpaces(orderData) after an order is submitted to update lesson spaces
-// Replace orderData with actual order data object
-// updateLessonSpaces(orderData);
-
-    </script>
+        function saveOrder(orderData) {
+          fetch('http://localhost:3000/orders', { // Update the endpoint with localhost:3000
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify(orderData),
+            })
+            .then(response => response.json())
+            .then(data => {
+              // Handle the response data here (if needed)
+              console.log('Order saved:', data);
+            })
+            .catch(error => {
+              console.error('Error saving order:', error);
+            });
+        }
+    
+        // Function to update available lesson spaces after an order is submitted
+        function updateLessonSpaces(orderData) {
+          fetch(`http://localhost:3000/lessons/${orderData.lessonIds}`, { // Update the endpoint with localhost:3000
+              method: 'PUT',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify(orderData),
+            })
+            .then(response => response.json())
+            .then(data => {
+              // Handle the response data here (if needed)
+              console.log('Lesson spaces updated:', data);
+            })
+            .catch(error => {
+              console.error('Error updating lesson spaces:', error);
+            });
+        }
+    
+        // Example usage:
+        // Call fetchLessons() when the page loads to retrieve lessons
+        fetchLessons();
+    
+        // Call saveOrder(orderData) when a new order is submitted
+        // Replace orderData with actual order data object
+        // saveOrder(orderData);
+    
+        // Call updateLessonSpaces(orderData) after an order is submitted to update lesson spaces
+        // Replace orderData with actual order data object
+        // updateLessonSpaces(orderData);
+      </script>
+    
 </div>
     <script type="text/javascript">
         let webstore = new Vue({
