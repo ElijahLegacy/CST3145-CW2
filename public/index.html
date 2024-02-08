@@ -176,6 +176,8 @@
             .catch(error => {
               console.error('Error fetching lessons:', error);
             });
+            fetch('http://localhost:3000/update-inventory', { /* Request options */ });
+            fetch('http://localhost:3000/save-order', { /* Request options */ });
         }
     
         // Function to save a new order to the server
