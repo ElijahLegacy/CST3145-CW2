@@ -165,9 +165,55 @@
             
     </main>
     <script>
+        // Function to save a new order to the server
+        function saveOrder(orderData) {
+        fetch('/orders', {  // Corrected endpoint to /orders
+            method: 'POST',
+            headers: {
+            'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(orderData),
+        })
+            .then(response => response.json())
+            .then(data => {
+            // Handle the response data here (if needed)
+            console.log('Order saved:', data);
+            })
+            .catch(error => {
+            console.error('Error saving order:', error);
+            });
+        }
+
+// Function to update available lesson spaces after an order is submitted
+                function updateLessonSpaces(orderData) {
+                fetch(`/lessons/${orderData.lessonIds}/update-space`, { // Update the endpoint with the correct one
+                    method: 'PUT',
+                    headers: {
+                    'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(orderData),
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                    // Handle the response data here (if needed)
+                    console.log('Lesson spaces updated:', data);
+                    })
+                    .catch(error => {
+                    console.error('Error updating lesson spaces:', error);
+                    });
+                }
+
+      
+        // Example usage:
+        // Call saveOrder(orderData) when a new order is submitted
+        // Replace orderData with actual order data object
+        // saveOrder(orderData);
+      </script>
+      
+      <script>
         // Function to fetch all lessons from the server
         function fetchLessons() {
-          fetch('http://localhost:3000/lessons') // Update the endpoint with localhost:3000
+          fetch('/lessons') // Assuming this is the correct endpoint on your server
             .then(response => response.json())
             .then(data => {
               // Handle the response data here (e.g., update Vue.js data)
@@ -176,13 +222,11 @@
             .catch(error => {
               console.error('Error fetching lessons:', error);
             });
-            fetch('http://localhost:3000/update-inventory', { /* Request options */ });
-            fetch('http://localhost:3000/save-order', { /* Request options */ });
         }
     
         // Function to save a new order to the server
         function saveOrder(orderData) {
-          fetch('http://localhost:3000/orders', { // Update the endpoint with localhost:3000
+          fetch('/orders', {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',
@@ -201,7 +245,7 @@
     
         // Function to update available lesson spaces after an order is submitted
         function updateLessonSpaces(orderData) {
-          fetch(`http://localhost:3000/lessons/${orderData.lessonIds}`, { // Update the endpoint with localhost:3000
+          fetch(`/lessons/${orderData.lessonIds}`, { // Assuming this is the correct endpoint on your server
               method: 'PUT',
               headers: {
                 'Content-Type': 'application/json',
@@ -233,6 +277,12 @@
     
 </div>
     <script type="text/javascript">
+        // Define the ObjectID constructor if it's not available
+        if (typeof ObjectID === 'undefined') {
+            var ObjectID = function (id) {
+                return id; // You can define your own ObjectID constructor logic here if needed
+            };
+        }
         let webstore = new Vue({
             el: '#app', // The 'el' should match the ID of the mounting point
             data: {
@@ -268,31 +318,32 @@
             },
             methods:{
                 addToCart(product) {
-                        if (this.canAddToCart(product)) {
-                            const index = this.products.findIndex(p => p.id === product.id);
-                            if (index !== -1) {
-                                // Update the original product's available inventory
-                                this.products[index].availableInventory--;
-                                // Add a copy of the product to the cart
-                                this.cart.push({ ...product });
+                    if (this.canAddToCart(product)) {
+                        // Code to add product to cart
+
+                        fetch('/update-inventory', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({ lessonId: product.id }),
+                        })
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error('Network response was not ok');
                             }
-                        }
-                            // Inside addToCart method
-                            fetch('/update-inventory', {
-                                method: 'POST',
-                                headers: {
-                                    'Content-Type': 'application/json',
-                                },
-                                body: JSON.stringify({ lessonId: product.id }),
-                            })
-                            .then(response => response.json())
-                            .then(data => {
-                                // Handle successful update of lesson inventory
-                            })
-                            .catch(error => {
-                                console.error('Error updating lesson inventory:', error);
-                            });
-                    },
+                            return response.json();
+                        })
+                        .then(data => {
+                            // Handle successful update of lesson inventory
+                            console.log('Lesson inventory updated:', data);
+                        })
+                        .catch(error => {
+                            console.error('Error updating lesson inventory:', error);
+                        });
+                    }
+                },
+
                     canAddToCart(product) {
                         return product.availableInventory > this.cartCount(product.id) && product.availableInventory > 0;
                     },
@@ -305,6 +356,20 @@
                     },
                     submitForm() {
                     if (this.isValidCheckout()) {
+                        const orderData = {
+                            _id: new ObjectID(),
+                            firstName: this.order.firstName,
+                            lastName: this.order.lastName,
+                            phone: this.order.phone,
+                            address: this.order.address,
+                            city: this.order.city,
+                            zip: this.order.zip,
+                            emirate: this.order.emirate,
+                            method: this.order.method,
+                            gift: this.order.gift,
+                            lessonIds: this.cart.map(item => item.id) // Extract lesson IDs from the cart
+                        }
+                        saveOrder(orderData);
                         this.orderSubmitted = true;
                     }
                         // Inside submitForm method
@@ -429,70 +494,5 @@
                 },
             });
     </script>
-
-<script>
-    // Function to fetch all lessons from the server
-    function fetchLessons() {
-      fetch('/lessons') // Assuming this is the correct endpoint on your server
-        .then(response => response.json())
-        .then(data => {
-          // Handle the response data here (e.g., update Vue.js data)
-          console.log('Lessons:', data);
-        })
-        .catch(error => {
-          console.error('Error fetching lessons:', error);
-        });
-    }
-
-    // Function to save a new order to the server
-    function saveOrder(orderData) {
-      fetch('/orders', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(orderData),
-        })
-        .then(response => response.json())
-        .then(data => {
-          // Handle the response data here (if needed)
-          console.log('Order saved:', data);
-        })
-        .catch(error => {
-          console.error('Error saving order:', error);
-        });
-    }
-
-    // Function to update available lesson spaces after an order is submitted
-    function updateLessonSpaces(orderData) {
-      fetch(`/lessons/${orderData.lessonIds}`, { // Assuming this is the correct endpoint on your server
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(orderData),
-        })
-        .then(response => response.json())
-        .then(data => {
-          // Handle the response data here (if needed)
-          console.log('Lesson spaces updated:', data);
-        })
-        .catch(error => {
-          console.error('Error updating lesson spaces:', error);
-        });
-    }
-
-    // Example usage:
-    // Call fetchLessons() when the page loads to retrieve lessons
-    fetchLessons();
-
-    // Call saveOrder(orderData) when a new order is submitted
-    // Replace orderData with actual order data object
-    // saveOrder(orderData);
-
-    // Call updateLessonSpaces(orderData) after an order is submitted to update lesson spaces
-    // Replace orderData with actual order data object
-    // updateLessonSpaces(orderData);
-  </script>
 </body>
 </html>
