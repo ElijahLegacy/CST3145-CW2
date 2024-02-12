@@ -1,6 +1,7 @@
 // Import necessary modules
 const express = require('express');
-const { MongoClient, ObjectId } = require('mongodb').MonogoClient;
+const bodyParser = require('body-parser');
+const { MongoClient, ObjectId } = require('mongodb');
 const path = require('path');
 
 // Initialize Express app
@@ -18,6 +19,7 @@ app.use((req, res, next) => {
 
 // Serve static files from the "public" directory
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(bodyParser.json());
 
 // MongoDB connection URI
 const mongoURI = 'mongodb+srv://ElijahLegacy:uA1yXRRQfvgScQox@cluster0.mkhsgyb.mongodb.net/';
@@ -91,8 +93,8 @@ app.get('/lessons/:id', (req, res) => {
     }
 });
 
-// Define POST route to place orders
-app.post('/orders', (req, res) => {
+// Define POST route to place new orders
+app.post('/new-orders', (req, res) => {
     const orderData = req.body; // Get order data from request body
     
     // Validate that orderData is not null or undefined
@@ -110,7 +112,7 @@ app.post('/orders', (req, res) => {
 
     ordersCollection.insertOne(orderData)
         .then(result => {
-            console.log('Order placed:', result.ops[0]);
+            console.log('Order placed:', result.insertedId);
             // Call function to update lesson inventory
             updateLessonInventory(orderData.lessonIds);
             res.status(201).json({ message: 'Order placed successfully' });
@@ -121,16 +123,29 @@ app.post('/orders', (req, res) => {
         });
 });
 
+// Define GET route to fetch all orders
+app.get('/orders', (req, res) => {
+    ordersCollection.find({}).toArray()
+        .then(orders => {
+            res.status(200).json(orders);
+        })
+        .catch(err => {
+            console.error('Error fetching orders:', err);
+            res.status(500).json({ error: 'An error occurred while fetching orders' });
+        });
+});
 
 
 
 
 // Define PUT route to update available lesson spaces
+// im not sure what to put for path 
 app.put('/lessons/:id/update-space', (req, res) => {
     const lessonId = req.params.id;
-    const newSpace = req.body.newSpace;
+    console.log(req.body);
+    const newSpace = req.body.availableInventory;
 
-    lessonsCollection.updateOne({ _id: ObjectId(lessonId) }, { $set: { space: newSpace } })
+    lessonsCollection.updateOne({ _id: new ObjectId(lessonId) }, { $set: { availableInventory: newSpace } })
         .then(result => {
             res.status(200).json({ message: 'Lesson space updated successfully' });
         })

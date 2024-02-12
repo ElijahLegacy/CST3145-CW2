@@ -235,7 +235,6 @@
                 submitForm() {
                     if (this.isValidCheckout()) {
                         const orderData = {
-                            _id: new ObjectID(),
                             firstName: this.order.firstName,
                             lastName: this.order.lastName,
                             phone: this.order.phone,
