@@ -152,6 +152,21 @@ app.put('/lessons/:id/update-space', (req, res) => {
         });
 });
 
+app.put('/update-space', (req, res) => {
+    const lessonId = req.params.id;
+    console.log(req.body);
+    const newSpace = req.body.availableInventory;
+
+    lessonsCollection.updateOne({ _id: new ObjectId(lessonId) }, { $set: { availableInventory: newSpace } })
+        .then(result => {
+            res.status(200).json({ message: 'Lesson space updated successfully' });
+        })
+        .catch(err => {
+            console.error('Error updating lesson space:', err);
+            res.status(500).json({ error: 'An error occurred while updating lesson space' });
+        });
+});
+
 // Function to update lesson inventory
 function updateLessonInventory(lessonIds) {
     lessonIds.forEach(lessonId => {
