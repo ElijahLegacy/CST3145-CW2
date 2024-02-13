@@ -155,9 +155,9 @@ app.put('/lessons/:id/update-space', (req, res) => {
 // Function to update lesson inventory
 function updateLessonInventory(lessonIds) {
     lessonIds.forEach(lessonId => {
-        const lessonIdInt = parseInt(lessonId);
+        const objectId = new ObjectId(lessonId); // Convert lessonId to ObjectId
         const lessonUpdate = { $inc: { availableInventory: -1 } }; // Decrease available inventory by 1
-        lessonsCollection.updateOne({ _id: lessonIdInt }, lessonUpdate)
+        lessonsCollection.updateOne({ _id: objectId }, lessonUpdate)
             .then(result => {
                 console.log(`Inventory updated for lesson with ID ${lessonId}`);
             })
@@ -166,6 +166,7 @@ function updateLessonInventory(lessonIds) {
             });
     });
 }
+
 
 // Handle errors
 app.use((err, req, res, next) => {
