@@ -207,7 +207,7 @@
                         }
                     }
                     // Inside addToCart method
-                    fetch('/lessons/:id/update-space', {
+                    fetch('http://localhost:3000/lessons/:id/update-spaces', {
                             method: 'POST',
                             headers: {
                                 'Content-Type': 'application/json',
@@ -250,7 +250,7 @@
                         this.orderSubmitted = true;
                     }
                     // Inside submitForm method
-                    fetch('/save-order', {
+                    fetch('http://localhost:3000/save-order', {
                             method: 'POST',
                             headers: {
                                 'Content-Type': 'application/json',
@@ -373,22 +373,28 @@
     </script>
 
     <script>
-        // Function to fetch all lessons from the server
+        // Function to save a new order to the server
         function fetchLessons() {
-            fetch('/lessons') 
+            fetch('http://localhost:3000/lessons', {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(),
+                })
                 .then(response => response.json())
                 .then(data => {
-                    // Handle the response data here (e.g., update Vue.js data)
-                    console.log('Lessons:', data);
+                    // Handle the response data here (if needed)
+                    console.log('Order saved:', data);
                 })
                 .catch(error => {
-                    console.error('Error fetching lessons:', error);
+                    console.error('Error saving order:', error);
                 });
         }
 
         // Function to save a new order to the server
         function saveOrder(orderData) {
-            fetch('/new-orders', {
+            fetch('http://localhost:3000/new-orders', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -407,7 +413,7 @@
 
         // Function to update available lesson spaces after an order is submitted
         function updateLessonSpaces(orderData) {
-            fetch(`/lessons/${orderData.lessonIds}`, { 
+            fetch(`http://localhost:3000/lessons/${orderData.lessonIds}`, { 
                     method: 'PUT',
                     headers: {
                         'Content-Type': 'application/json',
