@@ -375,7 +375,7 @@
     <script>
         // Function to fetch all lessons from the server
         function fetchLessons() {
-            fetch('/lessons') // Assuming this is the correct endpoint on your server
+            fetch('/lessons') 
                 .then(response => response.json())
                 .then(data => {
                     // Handle the response data here (e.g., update Vue.js data)
@@ -388,7 +388,7 @@
 
         // Function to save a new order to the server
         function saveOrder(orderData) {
-            fetch('/orders', {
+            fetch('/new-orders', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -407,14 +407,14 @@
 
         // Function to update available lesson spaces after an order is submitted
         function updateLessonSpaces(orderData) {
-            fetch(`/lessons/${orderData.lessonIds}`, { // Assuming this is the correct endpoint on your server
+            fetch(`/lessons/${orderData.lessonIds}`, { 
                     method: 'PUT',
                     headers: {
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify(orderData),
                 })
-                .then(response => response.json())
+                .then(response => response.json()) // this returns a promise
                 .then(data => {
                     // Handle the response data here (if needed)
                     console.log('Lesson spaces updated:', data);
@@ -424,17 +424,8 @@
                 });
         }
 
-        // Example usage:
-        // Call fetchLessons() when the page loads to retrieve lessons
         fetchLessons();
 
-        // Call saveOrder(orderData) when a new order is submitted
-        // Replace orderData with actual order data object
-        // saveOrder(orderData);
-
-        // Call updateLessonSpaces(orderData) after an order is submitted to update lesson spaces
-        // Replace orderData with actual order data object
-        // updateLessonSpaces(orderData);
     </script>
 </body>
 
