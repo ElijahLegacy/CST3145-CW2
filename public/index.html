@@ -212,7 +212,7 @@
                             headers: {
                                 'Content-Type': 'application/json',
                             },
-                            body: JSON.stringify({ lessonId: product.id }),
+                            body: JSON.stringify({ lessonId: product.id }), // Ensure that the correct lessonId is sent
                         })
                         .then(response => response.json())
                         .then(data => {
